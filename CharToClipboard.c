@@ -1,6 +1,5 @@
 #include <windows.h>
 #define UNICODE
-
 #ifndef UNICODE
     #include <stdio.h>
 #endif
@@ -10,23 +9,26 @@
 LRESULT CALLBACK WndProc(HWND, UINT, WPARAM, LPARAM);
 void CenterWindow(HWND);
 
-
-
 int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PWSTR pCmdLine, int nCmdShow) {
-                    
-    MSG  msg;    
+
+    LPCTSTR iconPathName = "icon.ico";
+    UINT icon_flags = LR_LOADFROMFILE | LR_DEFAULTSIZE;
+    HANDLE hIcon = LoadImage(hInstance, iconPathName, IMAGE_ICON, 0, 0, icon_flags);
+
+    MSG  msg;
     WNDCLASSW wc = {0};
-    wc.lpszClassName = L"Center";
+    wc.lpszClassName = L"Char to Clipboard";
     wc.hInstance     = hInstance;
     wc.hbrBackground = GetSysColorBrush(COLOR_3DFACE);
     wc.lpfnWndProc   = WndProc;
     wc.hCursor       = LoadCursor(0, IDC_ARROW);
-  
+    wc.hIcon         = (HICON) hIcon;
+
     RegisterClassW(&wc);
     CreateWindowW(wc.lpszClassName, L"Char to Clipboard", WS_OVERLAPPEDWINDOW | WS_VISIBLE, 100, 100, 240, 100, 0, 0, hInstance, 0);  
 
     while (GetMessage(&msg, NULL, 0, 0)) {
-  
+
         TranslateMessage(&msg);
         DispatchMessage(&msg);
     }
@@ -40,11 +42,11 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PWSTR pCmdLine
 #define ID_BTN4 4
 
 LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam) {
-    
+
     switch(msg) {
-  
+
         case WM_CREATE: 
-      
+
             CenterWindow(hwnd);
 
             CreateWindowW(L"Button", L"\u00EB", WS_VISIBLE | WS_CHILD , 5, 5, 50, 50, hwnd, (HMENU) ID_BTN1, NULL, NULL);   // ë
@@ -84,20 +86,19 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam) {
         EmptyClipboard();
         SetClipboardData(CF_TEXT, hMem);
         CloseClipboard();
-        
+
         SendMessage(hwnd, WM_CLOSE, 0, 0);
         break;
 
         case WM_DESTROY: 
-      
+
             PostQuitMessage(0);
             break;
 
         case WM_KEYDOWN:
 
-        if (wParam == VK_ESCAPE){
+        if (wParam == VK_ESCAPE) {
             SendMessage(hwnd, WM_CLOSE, 0, 0);
-            //PostQuitMessage(0);
         }
         break;
     }
@@ -108,13 +109,13 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam) {
 void CenterWindow(HWND hwnd) {
 
     RECT rc = {0};
-    
+
     GetWindowRect(hwnd, &rc);
     int win_w = rc.right - rc.left;
     int win_h = rc.bottom - rc.top;
 
     int screen_w = GetSystemMetrics(SM_CXSCREEN);
     int screen_h = GetSystemMetrics(SM_CYSCREEN);
-    
+
     SetWindowPos(hwnd, HWND_TOP, (screen_w - win_w)/2, (screen_h - win_h)/2, 0, 0, SWP_NOSIZE);
 }
