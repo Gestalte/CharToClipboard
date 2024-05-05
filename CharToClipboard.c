@@ -1,7 +1,7 @@
 #include <windows.h>
 #define UNICODE
 #ifndef UNICODE
-    #include <stdio.h>
+  #include <stdio.h>
 #endif
 #include <tchar.h>
 #pragma comment(lib, "user32")
@@ -11,111 +11,116 @@ void CenterWindow(HWND);
 
 int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PWSTR pCmdLine, int nCmdShow) {
 
-    LPCTSTR iconPathName = "icon.ico";
-    UINT icon_flags = LR_LOADFROMFILE | LR_DEFAULTSIZE;
-    HANDLE hIcon = LoadImage(hInstance, iconPathName, IMAGE_ICON, 0, 0, icon_flags);
+  LPCTSTR iconPathName = "icon.ico";
+  UINT icon_flags = LR_LOADFROMFILE | LR_DEFAULTSIZE;
+  HANDLE hIcon = LoadImage(hInstance, iconPathName, IMAGE_ICON, 0, 0, icon_flags);
 
-    MSG  msg;
-    WNDCLASSW wc = {0};
-    wc.lpszClassName = L"Char to Clipboard";
-    wc.hInstance     = hInstance;
-    wc.hbrBackground = GetSysColorBrush(COLOR_3DFACE);
-    wc.lpfnWndProc   = WndProc;
-    wc.hCursor       = LoadCursor(0, IDC_ARROW);
-    wc.hIcon         = (HICON) hIcon;
+  MSG msg;
+  WNDCLASSW wc = {0};
+  wc.lpszClassName = L"Char to Clipboard";
+  wc.hInstance = hInstance;
+  wc.hbrBackground = GetSysColorBrush(COLOR_3DFACE);
+  wc.lpfnWndProc = WndProc;
+  wc.hCursor = LoadCursor(0, IDC_ARROW);
+  wc.hIcon = (HICON)hIcon;
 
-    RegisterClassW(&wc);
-    CreateWindowW(wc.lpszClassName, L"Char to Clipboard", WS_OVERLAPPEDWINDOW | WS_VISIBLE, 100, 100, 240, 100, 0, 0, hInstance, 0);  
+  RegisterClassW(&wc);
+  CreateWindowW(wc.lpszClassName, L"Char to Clipboard", WS_OVERLAPPEDWINDOW | WS_VISIBLE, 100, 100, 295, 100, 0, 0, hInstance, 0);
 
-    while (GetMessage(&msg, NULL, 0, 0)) {
+  while (GetMessage(&msg, NULL, 0, 0)) {
 
-        TranslateMessage(&msg);
-        DispatchMessage(&msg);
-    }
+    TranslateMessage(&msg);
+    DispatchMessage(&msg);
+  }
 
-    return (int) msg.wParam;
+  return (int)msg.wParam;
 }
 
 #define ID_BTN1 1
 #define ID_BTN2 2
 #define ID_BTN3 3
 #define ID_BTN4 4
+#define ID_BTN5 5
 
 LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam) {
 
-    switch(msg) {
+  switch (msg) {
 
-        case WM_CREATE: 
+  case WM_CREATE:
 
-            CenterWindow(hwnd);
+    CenterWindow(hwnd);
 
-            CreateWindowW(L"Button", L"\u00EB", WS_VISIBLE | WS_CHILD , 5, 5, 50, 50, hwnd, (HMENU) ID_BTN1, NULL, NULL);   // ë
-            CreateWindowW(L"Button", L"\u00EA", WS_VISIBLE | WS_CHILD , 60, 5, 50, 50, hwnd, (HMENU) ID_BTN2, NULL, NULL);  // ê
-            CreateWindowW(L"Button", L"\u00E9", WS_VISIBLE | WS_CHILD , 115, 5, 50, 50, hwnd, (HMENU) ID_BTN3, NULL, NULL); // é
-            CreateWindowW(L"Button", L"\u00EF", WS_VISIBLE | WS_CHILD , 170, 5, 50, 50, hwnd, (HMENU) ID_BTN4, NULL, NULL); // ï
-            break;
+    CreateWindowW(L"Button", L"\u00EB", WS_VISIBLE | WS_CHILD, 5, 5, 50, 50, hwnd, (HMENU)ID_BTN1, NULL, NULL);   // ë
+    CreateWindowW(L"Button", L"\u00EA", WS_VISIBLE | WS_CHILD, 60, 5, 50, 50, hwnd, (HMENU)ID_BTN2, NULL, NULL);  // ê
+    CreateWindowW(L"Button", L"\u00E9", WS_VISIBLE | WS_CHILD, 115, 5, 50, 50, hwnd, (HMENU)ID_BTN3, NULL, NULL); // é
+    CreateWindowW(L"Button", L"\u00EF", WS_VISIBLE | WS_CHILD, 170, 5, 50, 50, hwnd, (HMENU)ID_BTN4, NULL, NULL); // ï
+    CreateWindowW(L"Button", L"\u00F4", WS_VISIBLE | WS_CHILD, 225, 5, 50, 50, hwnd, (HMENU)ID_BTN5, NULL, NULL); // ô
+    break;
 
-        case WM_COMMAND:
+  case WM_COMMAND:
 
-        char* text;
+    char* text;
 
-        switch (LOWORD(wParam))
-        {
-        case ID_BTN1:
-            text = "\u00EB"; // ë
-            break;
-        case ID_BTN2:
-            text = "\u00EA"; // ê
-            break;
-        case ID_BTN3:
-            text = "\u00E9"; // é
-            break;
-        case ID_BTN4:
-            text = "\u00EF"; // ï
-            break;
-        default:
-            text = "";
-            break;
-        }
-
-        const size_t len = strlen(text) + 1;
-        HGLOBAL hMem =  GlobalAlloc(GMEM_MOVEABLE, len);
-        memcpy(GlobalLock(hMem), text, len);
-        GlobalUnlock(hMem);
-        OpenClipboard(0);
-        EmptyClipboard();
-        SetClipboardData(CF_TEXT, hMem);
-        CloseClipboard();
-
-        SendMessage(hwnd, WM_CLOSE, 0, 0);
-        break;
-
-        case WM_DESTROY: 
-
-            PostQuitMessage(0);
-            break;
-
-        case WM_KEYDOWN:
-
-        if (wParam == VK_ESCAPE) {
-            SendMessage(hwnd, WM_CLOSE, 0, 0);
-        }
-        break;
+    switch (LOWORD(wParam))
+    {
+    case ID_BTN1:
+      text = "\u00EB"; // ë
+      break;
+    case ID_BTN2:
+      text = "\u00EA"; // ê
+      break;
+    case ID_BTN3:
+      text = "\u00E9"; // é
+      break;
+    case ID_BTN4:
+      text = "\u00EF"; // ï
+      break;
+    case ID_BTN5:
+      text = "\u00F4"; // ô
+      break;
+    default:
+      text = "";
+      break;
     }
 
-    return DefWindowProcW(hwnd, msg, wParam, lParam);
+    const size_t len = strlen(text) + 1;
+    HGLOBAL hMem = GlobalAlloc(GMEM_MOVEABLE, len);
+    memcpy(GlobalLock(hMem), text, len);
+    GlobalUnlock(hMem);
+    OpenClipboard(0);
+    EmptyClipboard();
+    SetClipboardData(CF_TEXT, hMem);
+    CloseClipboard();
+
+    SendMessage(hwnd, WM_CLOSE, 0, 0);
+    break;
+
+  case WM_DESTROY:
+
+    PostQuitMessage(0);
+    break;
+
+  case WM_KEYDOWN:
+
+    if (wParam == VK_ESCAPE) {
+      SendMessage(hwnd, WM_CLOSE, 0, 0);
+    }
+    break;
+  }
+
+  return DefWindowProcW(hwnd, msg, wParam, lParam);
 }
 
 void CenterWindow(HWND hwnd) {
 
-    RECT rc = {0};
+  RECT rc = {0};
 
-    GetWindowRect(hwnd, &rc);
-    int win_w = rc.right - rc.left;
-    int win_h = rc.bottom - rc.top;
+  GetWindowRect(hwnd, &rc);
+  int win_w = rc.right - rc.left;
+  int win_h = rc.bottom - rc.top;
 
-    int screen_w = GetSystemMetrics(SM_CXSCREEN);
-    int screen_h = GetSystemMetrics(SM_CYSCREEN);
+  int screen_w = GetSystemMetrics(SM_CXSCREEN);
+  int screen_h = GetSystemMetrics(SM_CYSCREEN);
 
-    SetWindowPos(hwnd, HWND_TOP, (screen_w - win_w)/2, (screen_h - win_h)/2, 0, 0, SWP_NOSIZE);
+  SetWindowPos(hwnd, HWND_TOP, (screen_w - win_w) / 2, (screen_h - win_h) / 2, 0, 0, SWP_NOSIZE);
 }
